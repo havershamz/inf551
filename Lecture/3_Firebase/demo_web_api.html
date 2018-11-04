@@ -1,0 +1,80 @@
+
+
+<html>
+<head><title>Test Firebase</title></head>
+<body>
+
+It is <span id="value"></span> today!!
+
+
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCnysutcHVtVDcSHJl8Hi5FVpOH9oLVzEk",
+    authDomain: "inf551-1b578.firebaseapp.com",
+    databaseURL: "https://inf551-1b578.firebaseio.com",
+    projectId: "inf551-1b578",
+    storageBucket: "inf551-1b578.appspot.com",
+    messagingSenderId: "252330872531"
+  };
+
+  firebase.initializeApp(config);
+  
+  var value = document.getElementById("value");
+  var dbRef = firebase.database().ref().child("weather");
+
+  // query example: a single value
+  dbRef.on('value', function(snapshot) { 
+     console.log("weather value" + ": " + JSON.stringify(snapshot.val()));
+     value.innerText = snapshot.val()
+  });
+
+   // similar to REST PUT 
+  function writeUserData(userId, name, email) {
+    firebase.database().ref("users/" + userId).set({
+      name: name,
+      email: email
+    });
+  }
+
+  writeUserData("128", "John", "john1@usc.edu");
+  writeUserData("124", "David", "david@usc.edu");
+  writeUserData("125", "Mary", "mary@usc.edu");
+
+  // similar to REST POST
+  firebase.database().ref("users").push().
+  	set({name: "John", email: "john@usc.edu"});
+
+  // similar to REST PATCH
+  function updateUserData(userId, phone) {
+    firebase.database().ref("users/" + userId).update({
+      phone: phone
+    });
+  }
+
+  updateUserData("123", "(626)123-0000");
+
+  // 
+  userRef = firebase.database().ref("users");
+  userRef.on("value", function(snapshot) {
+    snapshot.forEach(function(child) {
+     console.log(child.key + ": " + JSON.stringify(child.val()));
+    });
+  });
+
+  // web api does not require index on search key (age here)
+  queryRef = firebase.database().ref("users").
+  	orderByChild("age").equalTo(25);
+  queryRef.on("value", function(snapshot) {
+    snapshot.forEach(function(child) {
+     console.log(child.key + ": " + JSON.stringify(child.val()));
+    });
+  });
+
+
+
+</script>
+</body>
+
+</html>
